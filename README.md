@@ -83,6 +83,11 @@ To launch DiT-XL/2 (256x256) training with `N` GPUs on one node:
 accelerate launch --multi_gpu --num_processes N --mixed_precision fp16 train.py --model DiT-XL/2 --features-path /path/to/store/features
 ```
 
+To launch CM base on DiT-XL/2 with `N` GPUs on one node:
+```bash
+accelerate launch --main_process_port 56567 --multi_gpu --num_processes 8 --mixed_precision fp16 ditCM_fast.py --model DiT-XL/2 --feature-path /root/wc/fs/data4/ImageNet2012/features --pretrain --lr 1e-6 --num-sampling-steps 100 --results-dir results/0322mutil --global-batch-size 128
+```
+
 Alternatively, you have the option to extract and train the scripts located in the folder [training options](train_options).
 
 
