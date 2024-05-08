@@ -18,7 +18,7 @@ It contains:
 First, download and set up the repo:
 
 ```bash
-git clone https://github.com/chuanyangjin/fast-DiT.git
+git clone https://github.com/chuanyangjin/DIT_CM.git
 cd DiT
 ```
 
