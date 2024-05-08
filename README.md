@@ -15,7 +15,7 @@ DiTCM samples 4steps
 First, download and set up the repo:
 
 ```bash
-git clone https://github.com/chuanyangjin/DIT_CM.git
+git clone https://github.com/hjmnbnb/DIT_CM.git
 cd DIT_CM
 ```
 
