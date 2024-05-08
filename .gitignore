@@ -1,0 +1,4 @@
+results
+pretrained_models
+VIRTUAL_imagenet256_labeled.npz
+classify_image_graph_def.pb
