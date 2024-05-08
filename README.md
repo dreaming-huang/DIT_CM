@@ -9,16 +9,6 @@ DiT samples 4steps
 DiTCM samples 4steps
 ![DiTCM samples 4steps](visuals/0004000sample_valid.png)
 
-![DiT samples](visuals/sample_grid_0.png)
-
-This repo features an improved PyTorch implementation for the paper [**Scalable Diffusion Models with Transformers**](https://www.wpeebles.com/DiT).
-
-It contains:
-
-* 🪐 An improved PyTorch [implementation](models.py) and the original [implementation](train_options/models_original.py) of DiT
-* ⚡️ Pre-trained class-conditional DiT models trained on ImageNet (512x512 and 256x256)
-* 💥 A self-contained [Hugging Face Space](https://huggingface.co/spaces/wpeebles/DiT) and [Colab notebook](http://colab.research.google.com/github/facebookresearch/DiT/blob/main/run_DiT.ipynb) for running pre-trained DiT-XL/2 models
-* 🛸 An improved DiT [training script](train.py) and several [training options](train_options)
 
 ## Setup
 
@@ -26,7 +16,7 @@ First, download and set up the repo:
 
 ```bash
 git clone https://github.com/chuanyangjin/DIT_CM.git
-cd DiT
+cd DIT_CM
 ```
 
 We provide an [`environment.yml`](environment.yml) file that can be used to create a Conda environment. If you only want 
@@ -34,12 +24,10 @@ to run pre-trained models locally on CPU, you can remove the `cudatoolkit` and `
 
 ```bash
 conda env create -f environment.yml
-conda activate DiT
+conda activate DIT_CM
 ```
 
-
-## Sampling [![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/wpeebles/DiT) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/facebookresearch/DiT/blob/main/run_DiT.ipynb)
-![More DiT samples](visuals/sample_grid_1.png)
+The following refer to the contents of the DiT and fast-DiT project
 
 **Pre-trained DiT checkpoints.** You can sample from our pre-trained DiT models with [`sample.py`](sample.py). Weights for our pre-trained DiT model will be 
 automatically downloaded depending on the model you use. The script has various arguments to switch between the 256x256
@@ -89,41 +77,13 @@ To launch DiT-XL/2 (256x256) training with `N` GPUs on one node:
 ```bash
 accelerate launch --multi_gpu --num_processes N --mixed_precision fp16 train.py --model DiT-XL/2 --features-path /path/to/store/features
 ```
-
-To launch CM base on DiT-XL/2 with `N` GPUs on one node:
+### Training DiT_CM
+To launch DiT_CM base on DiT-XL/2 with `N` GPUs on one node:
 ```bash
 accelerate launch --main_process_port 56567 --multi_gpu --num_processes 8 --mixed_precision fp16 ditCM_fast.py --model DiT-XL/2 --feature-path /root/wc/fs/data4/ImageNet2012/features --pretrain --lr 1e-6 --num-sampling-steps 100 --results-dir results/0322mutil --global-batch-size 128
 ```
 
 Alternatively, you have the option to extract and train the scripts located in the folder [training options](train_options).
-
-
-### PyTorch Training Results
-
-We've trained DiT-XL/2 and DiT-B/4 models from scratch with the PyTorch training script
-to verify that it reproduces the original JAX results up to several hundred thousand training iterations. Across our experiments, the PyTorch-trained models give 
-similar (and sometimes slightly better) results compared to the JAX-trained models up to reasonable random variation. Some data points:
-
-| DiT Model  | Train Steps | FID-50K<br> (JAX Training) | FID-50K<br> (PyTorch Training) | PyTorch Global Training Seed |
-|------------|-------------|----------------------------|--------------------------------|------------------------------|
-| XL/2       | 400K        | 19.5                       | **18.1**                       | 42                           |
-| B/4        | 400K        | **68.4**                   | 68.9                           | 42                           |
-| B/4        | 400K        | 68.4                       | **68.3**                       | 100                          |
-
-These models were trained at 256x256 resolution; we used 8x A100s to train XL/2 and 4x A100s to train B/4. Note that FID 
-here is computed with 250 DDPM sampling steps, with the `mse` VAE decoder and without guidance (`cfg-scale=1`). 
-
-
-### Improved Training Performance
-In comparison to the original implementation, we implement a selection of training speed acceleration and memory saving features including gradient checkpointing, mixed precision training, and pre-extracted VAE features, resulting in a 95% speed increase and 60% memory reduction on DiT-XL/2. Some data points using a global batch size of 128 with a A100:
- 
-| gradient checkpointing | mixed precision training | feature pre-extraction | training speed | memory       |
-|:----------------------:|:------------------------:|:----------------------:|:--------------:|:------------:|
-| ❌                    | ❌                       | ❌                    | -              | out of memory|
-| ✔                     | ❌                       | ❌                    | 0.43 steps/sec | 44045 MB     |
-| ✔                     | ✔                        | ❌                    | 0.56 steps/sec | 40461 MB     |
-| ✔                     | ✔                        | ✔                     | 0.84 steps/sec | 27485 MB     |
-
 
 ## Evaluation (FID, Inception Score, etc.)
 
